@@ -109,7 +109,7 @@ resource "google_container_node_pool" "mlisa" {
 
   name = each.key
   project = var.project
-  cluster = google_container_cluster.mlisa[0].name
+  cluster = google_container_cluster.mlisa.name
   version = local.gke_stable_version
   location = local.gke_location
 
