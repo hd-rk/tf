@@ -1,13 +1,3 @@
-data "google_container_engine_versions" "default" {
-  location = var.regional ? var.region : var.zone
-}
-
-locals {
-  gke_stable_version = data.google_container_engine_versions.default.release_channel_default_version["STABLE"]
-  gke_location = var.regional ? var.region : var.zone
-  gke_node_pools = {for p in var.node_pools: p.name => p}
-}
-
 resource "google_container_cluster" "mlisa" {
   lifecycle {
     ignore_changes = [
@@ -23,15 +13,15 @@ resource "google_container_cluster" "mlisa" {
   network    = var.network
   subnetwork = var.subnet
 
-  location = local.gke_location
+  location = local.location
 
   initial_node_count = 0
   remove_default_node_pool = true
 
-  default_max_pods_per_node = var.max_pods_per_node
+  default_max_pods_per_node = local.max_pods_per_node
 
-  node_version = local.gke_stable_version
-  min_master_version = local.gke_stable_version
+  node_version = local.stable_version
+  min_master_version = local.stable_version
 
   resource_labels = {
     product = "mlisa"
@@ -39,8 +29,8 @@ resource "google_container_cluster" "mlisa" {
   }
 
   ip_allocation_policy {
-    cluster_secondary_range_name = var.pod_secondary_range_name
-    services_secondary_range_name = var.svc_secondary_range_name
+    cluster_secondary_range_name = local.pod_secondary_range_name
+    services_secondary_range_name = local.svc_secondary_range_name
   }
 
   master_auth {
@@ -68,8 +58,8 @@ resource "google_container_cluster" "mlisa" {
     master_ipv4_cidr_block = var.private.master_range_cidr
   }
 
-  monitoring_service = var.enable_monitoring ? "none" : "monitoring.googleapis.com/kubernetes"
-  logging_service = var.enable_monitoring ? "none" : "logging.googleapis.com/kubernetes"
+  monitoring_service = local.enable_monitoring ? "none" : "monitoring.googleapis.com/kubernetes"
+  logging_service = local.enable_monitoring ? "none" : "logging.googleapis.com/kubernetes"
 
   addons_config {
     horizontal_pod_autoscaling {
@@ -100,7 +90,7 @@ resource "google_container_cluster" "mlisa" {
 }
 
 resource "google_container_node_pool" "mlisa" {
-  for_each = local.gke_node_pools
+  for_each = local.node_pools
   lifecycle {
     ignore_changes = [
       version
@@ -110,8 +100,8 @@ resource "google_container_node_pool" "mlisa" {
   name = each.key
   project = var.project
   cluster = google_container_cluster.mlisa.name
-  version = local.gke_stable_version
-  location = local.gke_location
+  version = local.stable_version
+  location = local.location
 
   node_count = each.value.node_count
 
@@ -138,9 +128,12 @@ resource "google_container_node_pool" "mlisa" {
     }
   }
 
-  management {
-    auto_repair = false
-    auto_upgrade = false
+  dynamic "management" {
+    for_each = [var.node_management]
+    content = {
+      auto_repair = management.value["auto_repair"]
+      auto_upgrade = management.value["auto_upgrade"]
+    }
   }
 
   upgrade_settings {

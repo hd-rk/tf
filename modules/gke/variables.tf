@@ -6,29 +6,31 @@ variable "zone" {}
 variable "network" {}
 variable "subnet" {}
 
+variable "preset" {}
+
 variable "enable_monitoring" {
   type = bool
-  default = true
+  default = null
 }
 
 variable "regional" {
   type = bool
-  default = false
+  default = null
 }
 
 variable "max_pods_per_node" {
   type = number
-  default = 110
+  default = null
 }
 
 variable "pod_secondary_range_name" {
   type = string
-  default = ""
+  default = null
 }
 
 variable "svc_secondary_range_name" {
   type = string
-  default = ""
+  default = null
 }
 
 variable "master_auth_networks" {
@@ -69,7 +71,7 @@ variable "node_pools" {
     labels = map(string)
     tags = list(string)
   }))
-  default = []
+  default = null
 }
 
 variable "node_management" {
