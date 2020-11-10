@@ -25,7 +25,7 @@ resource "google_container_cluster" "mlisa" {
 
   location = local.gke_location
 
-  initial_node_count = 0
+  initial_node_count = 1
   remove_default_node_pool = true
 
   default_max_pods_per_node = var.max_pods_per_node
