@@ -1,3 +1,3 @@
-output "id" {
-  value = google_runtimeconfig_config.mlisa.id
+output "name" {
+  value = google_runtimeconfig_config.mlisa.name
 }

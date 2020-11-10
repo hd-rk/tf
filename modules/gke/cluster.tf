@@ -151,6 +151,6 @@ resource "google_container_node_pool" "mlisa" {
 
 resource "google_runtimeconfig_variable" "mlisa_gke_cluster_name" {
   name = "GKE_CLUSTER_NAME"
-  parent = var.deployment_config_id
+  parent = var.deployment_config_name
   text = google_container_cluster.mlisa.name
 }
