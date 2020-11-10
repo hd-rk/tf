@@ -6,6 +6,8 @@ variable "zone" {}
 variable "network" {}
 variable "subnet" {}
 
+variable "deployment_config_id" {}
+
 variable "enable_monitoring" {
   type = bool
   default = true
