@@ -31,6 +31,7 @@ resource "google_dataproc_cluster" "mlisa" {
       subnetwork = var.subnet
       internal_ip_only = var.internal_ip
       metadata = local.metadata
+      tags = ["dpc-${var.deployment_name}-vms-${random_string.mlisa_dpc_id.result}"]
     }
 
     software_config {

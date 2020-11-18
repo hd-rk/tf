@@ -86,3 +86,8 @@ variable "product_labels" {
     "product" = "mlisa"
   }
 }
+
+variable "ingress_source_cidr_ranges" {
+  type = set(string)
+  default = []
+}
