@@ -7,6 +7,10 @@ locals {
     "mlisaDeploymentName" = var.deployment_name
   } : {}
   metadata = merge(local.dns_metadata, local.logstash_metadata)
+  zero_worker_property = {
+    "dataproc:dataproc.allow.zero.workers" = "true"
+  }
+  properties = var.worker_config.num_instances > 0 ? var.properties : merge(var.properties, local.zero_worker_property)
 }
 
 resource "random_string" "mlisa_dpc_id" {
@@ -31,7 +35,7 @@ resource "google_dataproc_cluster" "mlisa" {
 
     software_config {
       image_version = var.image_version
-      override_properties = var.properties
+      override_properties = local.properties
     }
 
     master_config {
