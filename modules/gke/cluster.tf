@@ -8,6 +8,12 @@ locals {
   gke_node_pools = {for p in var.node_pools: p.name => p}
 }
 
+resource "random_string" "mlisa_gke_id" {
+  length = 6
+  upper = false
+  special = false
+}
+
 resource "google_container_cluster" "mlisa" {
   lifecycle {
     ignore_changes = [
@@ -17,7 +23,7 @@ resource "google_container_cluster" "mlisa" {
     ]
   }
 
-  name    = "${var.deployment_name}-gke"
+  name    = "${var.deployment_name}-gke-${random_string.mlisa_gke_id.result}"
   project = var.project
 
   network    = var.network
