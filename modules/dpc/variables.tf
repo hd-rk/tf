@@ -24,34 +24,60 @@ variable "logstash" {
   }
 }
 
-variable "clusters" {
-  type = list(object({
-    name = string
-    internal_ip = bool
-    image_version = string
-    properties = map(string)
-    init_actions = set(string)
-    master_config = object({
-      ha = bool
-      machine_type = string
-      disk_config = object({
-        boot_disk_type = string
-        boot_disk_size_gb = number
-        num_local_ssds = number
-      })
+
+variable "name" {}
+
+variable "internal_ip" {
+  type = bool
+  default = true
+}
+
+variable "image_version" {}
+
+variable "properties" {
+  type = map(string)
+  default = {}
+}
+
+
+variable "init_actions" {
+  type = set(string)
+  default = []
+}
+
+
+variable "master_config" {
+  type = object({
+    ha = bool
+    machine_type = string
+    disk_config = object({
+      boot_disk_type = string
+      boot_disk_size_gb = number
+      num_local_ssds = number
     })
-    worker_config = object({
-      num_instances = number
-      machine_type = string
-      disk_config = object({
-        boot_disk_type = string
-        boot_disk_size_gb = number
-        num_local_ssds = number
-      })
+  })
+}
+
+variable "worker_config" {
+  type = object({
+    num_instances = number
+    machine_type = string
+    disk_config = object({
+      boot_disk_type = string
+      boot_disk_size_gb = number
+      num_local_ssds = number
     })
-    num_preemptible_workers = number
-    labels = map(string)
-  }))
+  })
+}
+
+variable "num_preemptible_workers" {
+  type = number
+  default = 0
+}
+
+variable "labels" {
+  type = map(string)
+  default = {}
 }
 
 variable "product_labels" {
